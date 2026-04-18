@@ -3,92 +3,73 @@ import { InputArea } from "../components/InputArea";
 import { OutputPanel } from "../components/OutputPanel";
 import { InfoBlocks } from "../components/InfoBlocks";
 
+const API_URL = "";
+
 export default function Home() {
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState("");
   const [generated, setGenerated] = useState(false);
+
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
-    const checkScreen = () => {
-      setIsMobile(window.innerWidth < 768);
-    };
-
-    checkScreen();
-
-    window.addEventListener("resize", checkScreen);
-
-    return () => {
-      window.removeEventListener("resize", checkScreen);
-    };
+    const check = () => setIsMobile(window.innerWidth < 768);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
   }, []);
 
   const handleGenerate = async () => {
-    if (!input.trim()) return;
+    if (!input) return;
 
     setGenerated(true);
     setLoading(true);
 
     try {
-      const cleanInput = input
-        .replace(/\u2028/g, " ")
-        .replace(/\u2029/g, " ")
-        .trim();
-
       const res = await fetch("/api/generate", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          input: cleanInput,
-        }),
+        body: JSON.stringify({ input }),
       });
 
       const text = await res.text();
-
       console.log("RESPOSTA RAW:", text);
 
-      if (!text) {
-        throw new Error("Resposta vazia");
-      }
+      if (!text) throw new Error("Resposta vazia");
 
       const data = JSON.parse(text);
-
-      if (!res.ok) {
-        throw new Error(data.error || "Erro ao gerar");
-      }
-
-      setResult(data.result || "Sem resposta");
-    } catch (error) {
-      console.error(error);
-      setResult("Erro ao gerar resposta.");
-    } finally {
-      setLoading(false);
+      setResult(data.result || "Erro ao gerar resposta");
+    } catch (err) {
+      console.error(err);
+      setResult("Erro ao gerar resposta");
     }
+
+    setLoading(false);
   };
 
   const infoItems = [
     {
       title: "Demandas vagas travam decisões",
       content:
-        "Transforme pedidos confusos em direcionamentos claros, objetivos e acionáveis.",
+        "A maioria das demandas chega sem contexto, sem objetivo claro e sem direcionamento.",
     },
     {
-      title: "Executar sem estruturar custa caro",
+      title: "Executar sem estruturar é o erro silencioso",
       content:
-        "Reduza retrabalho, desalinhamento e decisões baseadas em achismo.",
+        "Ir direto para execução gera desalinhamento, retrabalho e baixo impacto.",
     },
     {
-      title: "Pense como Product Owners de alto nível",
+      title: "Product Owners de alto nível pensam diferente",
       content:
-        "Receba raciocínios estratégicos, hipóteses fortes e planos bem organizados.",
+        "Eles estruturam antes de agir: objetivo, hipóteses e plano claro.",
     },
     {
-      title: "Mais clareza. Mais velocidade.",
+      title: "Transforme qualquer demanda em um plano claro",
       content:
-        "Use IA para acelerar análises e ganhar confiança nas próximas decisões.",
+        "Com poucos inputs, você gera direcionamento real e acionável.",
     },
   ];
 
@@ -100,7 +81,6 @@ export default function Home() {
     cursor: "pointer",
     fontSize: 12,
     width: isMobile ? "100%" : "auto",
-    textAlign: "center",
   };
 
   return (
@@ -111,12 +91,12 @@ export default function Home() {
         margin: "0 auto",
       }}
     >
-      {/* TOPO */}
+      {/* 🔥 HEADER DISCRETO */}
       <div
         style={{
           display: "flex",
           justifyContent: "center",
-          marginBottom: 24,
+          marginBottom: 20,
         }}
       >
         <div
@@ -125,12 +105,12 @@ export default function Home() {
             borderRadius: 999,
             fontSize: 12,
             color: "#64748b",
-            background: "rgba(255,255,255,0.7)",
-            border: "1px solid rgba(0,0,0,0.06)",
-            backdropFilter: "blur(12px)",
+            backdropFilter: "blur(10px)",
+            background: "rgba(255,255,255,0.6)",
+            border: "1px solid rgba(0,0,0,0.05)",
+            boxShadow: "0 4px 20px rgba(0,0,0,0.05)",
           }}
         >
-          Próximos Passos
         </div>
       </div>
 
@@ -141,37 +121,27 @@ export default function Home() {
           flexDirection: isMobile ? "column" : "row",
           gap: 40,
           marginBottom: 50,
-          alignItems: "center",
         }}
       >
         {/* TEXTO */}
         <div style={{ flex: 1 }}>
           <h1
             style={{
-              fontSize: isMobile ? 28 : 42,
-              lineHeight: 1.15,
+              fontSize: isMobile ? 26 : 38,
               fontWeight: 800,
-              marginBottom: 14,
-              color: "#0f172a",
+              marginBottom: 12,
+              lineHeight: 1.2,
             }}
           >
-            Recebeu uma demanda
+            Recebeu uma demanda e não sabe o que fazer?
             <br />
             <span style={{ color: "#2563eb" }}>
-              e não sabe por onde começar?
+              Gere um guia completo para te guiar.
             </span>
           </h1>
 
-          <p
-            style={{
-              color: "#64748b",
-              fontSize: 16,
-              lineHeight: 1.6,
-              maxWidth: 520,
-            }}
-          >
-            Descreva o cenário e receba um plano estruturado com visão de
-            Product Owner experiente.
+          <p style={{ color: "#64748b" }}>
+            Escreva o problema e receba um plano estruturado mostrando como um Product Owner faria.
           </p>
         </div>
 
@@ -180,62 +150,51 @@ export default function Home() {
           style={{
             flex: 1,
             width: "100%",
-            background:
-              "linear-gradient(135deg, rgba(255,255,255,0.92), rgba(255,255,255,0.75))",
-            borderRadius: 22,
-            padding: isMobile ? 16 : 24,
-            boxShadow: "0 25px 80px rgba(37,99,235,0.14)",
-            border: "1px solid rgba(255,255,255,0.8)",
             backdropFilter: "blur(16px)",
+            background:
+              "linear-gradient(135deg, rgba(255,255,255,0.9), rgba(255,255,255,0.75))",
+            borderRadius: 20,
+            padding: isMobile ? 16 : 24,
+            boxShadow: "0 25px 80px rgba(37,99,235,0.18)",
           }}
         >
-          <div style={{ marginBottom: 14 }}>
-            <h3
-              style={{
-                margin: 0,
-                fontSize: 16,
-                color: "#0f172a",
-              }}
-            >
-              Escolha um exemplo ou escreva sua demanda:
-            </h3>
+          <div style={{ marginBottom: 12 }}>
+            <h3>Escolha um exemplo abaixo ou escreva a sua demanda:</h3>
           </div>
 
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              gap: 10,
-              marginBottom: 16,
-            }}
-          >
+          {/* EXEMPLOS */}
+          <div style={{ marginBottom: 10 }}>
             <button
               style={chipStyle}
               onClick={() =>
                 setInput(
-                  "Entender o aumento do churn nos últimos 3 meses e identificar causas principais."
+                  "Entender o aumento do Churn nos últimos 3 meses e identificar os principais fatores."
                 )
               }
             >
-              Entender aumento do churn
+              Entender o aumento do Churn
             </button>
+          </div>
 
+          <div style={{ marginBottom: 10 }}>
             <button
               style={chipStyle}
               onClick={() =>
                 setInput(
-                  "Criar um plano para aumentar o NPS e melhorar a percepção de valor do produto."
+                  "Criar um plano para aumento do NPS e identificar quais funcionalidades geram mais valor."
                 )
               }
             >
-              Aumentar o NPS
+              Fazer plano para aumentar o NPS
             </button>
+          </div>
 
+          <div style={{ marginBottom: 10 }}>
             <button
               style={chipStyle}
               onClick={() =>
                 setInput(
-                  "Mapear a jornada do usuário e encontrar pontos de atrito com oportunidades de melhoria."
+                  "Mapear a jornada do usuário completa e identificar pontos de atrito e oportunidades de melhoria."
                 )
               }
             >
@@ -259,7 +218,7 @@ export default function Home() {
         </div>
       )}
 
-      {/* BLOCOS */}
+      {/* INFO */}
       <InfoBlocks items={infoItems} />
 
       {/* FOOTER */}
