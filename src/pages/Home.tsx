@@ -36,11 +36,9 @@ const handleGenerate = async () => {
     const res = await fetch("/api/generate", {
       method: "POST",
       headers: {
-        "Content-Type": "application/json",
+        "Content-Type": "text/plain",
       },
-      body: JSON.stringify({
-        input: cleanInput,
-      }),
+      body: cleanInput,
     });
 
     const text = await res.text();
@@ -61,7 +59,7 @@ const handleGenerate = async () => {
     setLoading(false);
   }
 };
-
+  
   const infoItems = [
     {
       title: "Demandas vagas travam decisões",
