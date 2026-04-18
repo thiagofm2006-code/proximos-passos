@@ -1,28 +1,38 @@
-import OpenAI from "openai";
-
-const client = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
-
-export default async function handler(req: any, res: any) {
+export default async function handler(req, res) {
   try {
     if (req.method !== "POST") {
-      return res.status(405).json({ error: "Método não permitido" });
+      return res.status(405).json({
+        error: "Metodo nao permitido",
+      });
     }
 
-    const { input } = req.body;
+    const apiKey = process.env.OPENAI_API_KEY;
 
-    if (!input) {
-      return res.status(400).json({ error: "Input vazio" });
+    if (!apiKey) {
+      return res.status(500).json({
+        error: "API key ausente",
+      });
     }
 
-    const completion = await client.chat.completions.create({
-      model: "gpt-4o-mini",
-      temperature: 0.7,
-      messages: [
-        {
-          role: "system",
-          content: `
+    const input =
+      typeof req.body === "string"
+        ? req.body
+        : req.body?.input || "";
+
+    const response = await fetch(
+      "https://api.openai.com/v1/chat/completions",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${apiKey}`,
+        },
+        body: JSON.stringify({
+          model: "gpt-4o-mini",
+          messages: [
+            {
+              role: "system",
+              ontent: `
 Você é um Product Owner sênior extremamente estratégico.
 
 Transforme qualquer demanda vaga em um plano profundo e acionável.
@@ -46,22 +56,38 @@ Formato obrigatório:
 💡 Exemplos práticos
 
 🧠 Aprendizados
-          `,
-        },
-        {
-          role: "user",
-          content: input,
-        },
-      ],
+          `
+            },
+            {
+              role: "user",
+              content: input,
+            },
+          ],
+          temperature: 0.7,
+        }),
+      }
+    );
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      return res.status(500).json({
+        error:
+          data?.error?.message ||
+          "Erro OpenAI",
+      });
+    }
+
+    return res.status(200).json({
+      result:
+        data?.choices?.[0]?.message?.content ||
+        "Sem resposta",
     });
-
-    const result = completion.choices?.[0]?.message?.content || "Sem resposta";
-
-    return res.status(200).json({ result });
   } catch (error) {
-    console.error(error);
     return res.status(500).json({
-      error: "Erro ao gerar resposta",
+      error:
+        error?.message ||
+        "Erro interno",
     });
   }
 }
