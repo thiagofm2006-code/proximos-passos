@@ -100,7 +100,7 @@ const handleGenerate = async () => {
         maxWidth: 1200,
         margin: "0 auto",
       }}
-
+ >
       {/* HERO */}
       <div
         style={{
