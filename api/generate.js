@@ -33,7 +33,7 @@ export default async function handler(req, res) {
             {
               role: "system",
               content:
-                "Voce e um Product Owner senior estrategico. Responda em portugues estruturando em Objetivo, Contexto, Hipoteses, Plano de acao, Metricas, Riscos e Proximos passos.",
+                "Voce e um Product Owner senior estrategico. Responda em portugues estruturando em Objetivo, Contexto, Hipoteses, Plano de acao, Metricas, Riscos, Proximos passos, Exemplos e Aprendizados.",
             },
             {
               role: "user",
