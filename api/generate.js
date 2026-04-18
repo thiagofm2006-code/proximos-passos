@@ -32,31 +32,8 @@ export default async function handler(req, res) {
           messages: [
             {
               role: "system",
-              ontent: `
-Você é um Product Owner sênior extremamente estratégico.
-
-Transforme qualquer demanda vaga em um plano profundo e acionável.
-
-Formato obrigatório:
-
-🎯 Objetivo
-
-🧠 Contexto
-
-🔍 Hipóteses
-
-🛠 Plano de ação
-
-📊 Métricas
-
-⚠️ Riscos
-
-👉 Próximos passos
-
-💡 Exemplos práticos
-
-🧠 Aprendizados
-          `
+              content:
+                "Voce e um Product Owner senior estrategico. Responda em portugues estruturando em Objetivo, Contexto, Hipoteses, Plano de acao, Metricas, Riscos e Proximos passos.",
             },
             {
               role: "user",
