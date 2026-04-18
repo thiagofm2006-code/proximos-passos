@@ -7,37 +7,29 @@ const client = new OpenAI({
 export default async function handler(req: any, res: any) {
   try {
     if (req.method !== "POST") {
-      return res.status(405).json({ error: "Método não permitido" });
-    }
-
-    if (!process.env.OPENAI_API_KEY) {
-      return res.status(500).json({
-        error: "OPENAI_API_KEY não encontrada",
-      });
+      return res.status(405).json({ error: "Metodo nao permitido" });
     }
 
     const { input } = req.body || {};
 
     if (!input) {
-      return res.status(400).json({
-        error: "Input vazio",
-      });
+      return res.status(400).json({ error: "Input vazio" });
     }
 
     const completion = await client.chat.completions.create({
       model: "gpt-4o-mini",
+      temperature: 0.7,
       messages: [
         {
           role: "system",
           content:
-            "Você é um Product Owner sênior e responde de forma estratégica e estruturada.",
+            "Voce e um Product Owner senior. Transforme qualquer demanda em um plano claro com secoes: Objetivo, Contexto, Hipoteses, Plano de acao, Metricas, Riscos e Proximos passos.",
         },
         {
           role: "user",
           content: input,
         },
       ],
-      temperature: 0.7,
     });
 
     const result =
@@ -45,8 +37,6 @@ export default async function handler(req: any, res: any) {
 
     return res.status(200).json({ result });
   } catch (error: any) {
-    console.error("ERRO API:", error);
-
     return res.status(500).json({
       error: error?.message || "Erro interno",
     });
