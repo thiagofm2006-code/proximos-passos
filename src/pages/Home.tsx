@@ -100,29 +100,6 @@ const handleGenerate = async () => {
         maxWidth: 1200,
         margin: "0 auto",
       }}
-    >
-      {/* 🔥 HEADER DISCRETO */}
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          marginBottom: 20,
-        }}
-      >
-        <div
-          style={{
-            padding: "6px 14px",
-            borderRadius: 999,
-            fontSize: 12,
-            color: "#64748b",
-            backdropFilter: "blur(10px)",
-            background: "rgba(255,255,255,0.6)",
-            border: "1px solid rgba(0,0,0,0.05)",
-            boxShadow: "0 4px 20px rgba(0,0,0,0.05)",
-          }}
-        >
-        </div>
-      </div>
 
       {/* HERO */}
       <div
