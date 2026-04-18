@@ -20,35 +20,47 @@ export default function Home() {
     return () => window.removeEventListener("resize", check);
   }, []);
 
-  const handleGenerate = async () => {
-    if (!input) return;
+const handleGenerate = async () => {
+  if (!input.trim()) return;
 
-    setGenerated(true);
-    setLoading(true);
+  setGenerated(true);
+  setLoading(true);
 
-    try {
-      const res = await fetch("/api/generate", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ input }),
-      });
+  try {
+    const cleanInput = input
+      .normalize("NFKD")
+      .replace(/[^\x00-\x7F]/g, " ")
+      .replace(/\s+/g, " ")
+      .trim();
 
-      const text = await res.text();
-      console.log("RESPOSTA RAW:", text);
+    const res = await fetch("/api/generate", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        input: cleanInput,
+      }),
+    });
 
-      if (!text) throw new Error("Resposta vazia");
+    const text = await res.text();
 
-      const data = JSON.parse(text);
-      setResult(data.result || "Erro ao gerar resposta");
-    } catch (err) {
-      console.error(err);
-      setResult("Erro ao gerar resposta");
+    console.log("RESPOSTA RAW:", text);
+
+    const data = JSON.parse(text);
+
+    if (!res.ok) {
+      throw new Error(data.error || "Erro");
     }
 
+    setResult(data.result || "");
+  } catch (error) {
+    console.error(error);
+    setResult("Erro ao gerar resposta.");
+  } finally {
     setLoading(false);
-  };
+  }
+};
 
   const infoItems = [
     {
