@@ -20,16 +20,9 @@ export default async function handler(req, res) {
       });
     }
 
-    let body = req.body;
-
-    // Se vier string, parse manual
-    if (typeof body === "string") {
-      body = JSON.parse(body);
-    }
-
     const input =
-      typeof body?.input === "string"
-        ? body.input
+      typeof req.body === "string"
+        ? req.body
         : "";
 
     if (!input.trim()) {
@@ -60,12 +53,10 @@ export default async function handler(req, res) {
 
     return res.status(200).json({
       result:
-        completion.choices?.[0]?.message
-          ?.content || "Sem resposta",
+        completion.choices?.[0]?.message?.content ||
+        "Sem resposta",
     });
   } catch (error) {
-    console.error(error);
-
     return res.status(500).json({
       error:
         error?.message || "Erro interno",
