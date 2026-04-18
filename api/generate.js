@@ -20,9 +20,16 @@ export default async function handler(req, res) {
       });
     }
 
+    let body = req.body;
+
+    // Se vier string, parse manual
+    if (typeof body === "string") {
+      body = JSON.parse(body);
+    }
+
     const input =
-      typeof req.body?.input === "string"
-        ? req.body.input
+      typeof body?.input === "string"
+        ? body.input
         : "";
 
     if (!input.trim()) {
@@ -37,7 +44,7 @@ export default async function handler(req, res) {
 
     const completion =
       await client.chat.completions.create({
-        model: "gpt-3.5-turbo",
+        model: "gpt-4o-mini",
         messages: [
           {
             role: "system",
@@ -61,9 +68,7 @@ export default async function handler(req, res) {
 
     return res.status(500).json({
       error:
-        error?.message ||
-        JSON.stringify(error) ||
-        "Erro interno",
+        error?.message || "Erro interno",
     });
   }
 }
