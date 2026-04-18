@@ -25,13 +25,7 @@ export default async function handler(req, res) {
         ? req.body.input
         : "";
 
-    const cleanInput = input
-      .normalize("NFKD")
-      .replace(/[^\x00-\x7F]/g, " ")
-      .replace(/\s+/g, " ")
-      .trim();
-
-    if (!cleanInput) {
+    if (!input.trim()) {
       return res.status(400).json({
         error: "Input vazio",
       });
@@ -43,33 +37,33 @@ export default async function handler(req, res) {
 
     const completion =
       await client.chat.completions.create({
-        model: "gpt-4o-mini",
+        model: "gpt-3.5-turbo",
         messages: [
           {
             role: "system",
             content:
-              "You are a senior Product Owner. Answer in structured Portuguese.",
+              "Voce e um Product Owner senior.",
           },
           {
             role: "user",
-            content: cleanInput,
+            content: input,
           },
         ],
-        temperature: 0.7,
       });
 
-    const result =
-      completion?.choices?.[0]?.message?.content ||
-      "Sem resposta";
-
     return res.status(200).json({
-      result: String(result),
+      result:
+        completion.choices?.[0]?.message
+          ?.content || "Sem resposta",
     });
   } catch (error) {
-    console.error("API ERROR:", error);
+    console.error(error);
 
     return res.status(500).json({
-      error: "Falha interna",
+      error:
+        error?.message ||
+        JSON.stringify(error) ||
+        "Erro interno",
     });
   }
 }
