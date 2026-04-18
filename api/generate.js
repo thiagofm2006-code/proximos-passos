@@ -19,28 +19,86 @@ export default async function handler(req, res) {
         ? req.body
         : req.body?.input || "";
 
+    if (!input.trim()) {
+      return res.status(400).json({
+        error: "Input vazio",
+      });
+    }
+
     const response = await fetch(
       "https://api.openai.com/v1/chat/completions",
       {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${apiKey}`,
+          Authorization: `Bearer ${apiKey.trim()}`,
         },
         body: JSON.stringify({
           model: "gpt-4o-mini",
+          temperature: 0.8,
           messages: [
             {
               role: "system",
-              content:
-                "Voce e um Product Owner senior estrategico. Responda em portugues estruturando em Objetivo, Contexto, Hipoteses, Plano de acao, Metricas, Riscos, Proximos passos, Exemplos e Aprendizados.",
+              content: `
+Voce e um Product Owner senior altamente estrategico.
+
+Transforme qualquer demanda vaga em um plano premium.
+
+RESPONDA SEMPRE EM PORTUGUES.
+
+FORMATO OBRIGATORIO:
+
+🎯 Objetivo
+Texto claro e estrategico.
+
+🧠 Contexto
+Explique o cenario e o problema real.
+
+🔍 Hipóteses
+- item
+- item
+- item
+
+🛠 Plano de ação
+1. passo
+2. passo
+3. passo
+
+📊 Métricas
+- item
+- item
+
+⚠️ Riscos
+- item
+- item
+
+👉 Próximos passos
+- item
+- item
+
+💡 Exemplos práticos
+- item
+- item
+
+🧠 Aprendizados
+- item
+- item
+
+REGRAS:
+- Nunca use ###
+- Nunca use markdown
+- Nunca use tabela
+- Seja profundo
+- Seja objetivo
+- Seja executivo
+- Gere valor real
+              `,
             },
             {
               role: "user",
               content: input,
             },
           ],
-          temperature: 0.7,
         }),
       }
     );
